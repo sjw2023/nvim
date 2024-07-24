@@ -17,13 +17,14 @@ opt.wrap = false
 opt.ignorecase = true
 opt.smartcase = true
 
--- cursor liune
+-- Cursor line
 opt.cursorline = true
 
 -- appearance
 opt.termguicolors = true
-opt.background = "dark"
+-- opt.background = "dark"
 opt.signcolumn = "yes"
+vim.cmd.colorscheme = "catppuccin"
 
 -- backspace
 opt.backspace = "indent,eol,start"
@@ -36,6 +37,3 @@ opt.splitright = true
 opt.splitbelow = true
 
 opt.iskeyword:append("-")
-
-
-
