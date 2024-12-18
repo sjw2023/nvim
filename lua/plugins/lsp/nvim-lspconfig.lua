@@ -2,8 +2,20 @@ return {
 	"neovim/nvim-lspconfig",
 	event = { "BufReadPre", "BufNewFile" },
 	dependencies = {
+		-- LSP Management
+		-- https://github.com/williamboman/mason.nvim
+		{ "williamboman/mason.nvim" },
+		-- https://github.com/williamboman/mason-lspconfig.nvim
+		{ "williamboman/mason-lspconfig.nvim" },
+
+		-- Auto-Install LSPs, linters, formatters, debuggers
+		-- https://github.com/WhoIsSethDaniel/mason-tool-installer.nvim
+		{ "WhoIsSethDaniel/mason-tool-installer.nvim" },
+
 		"hrsh7th/cmp-nvim-lsp",
 		{ "antosha417/nvim-lsp-file-operations", config = true },
+		-- Additional lua configuration, makes nvim stuff amazing
+		-- https://github.com/folke/neodev.nvim
 		{ "folke/neodev.nvim", opts = {} },
 	},
 	config = function()
@@ -80,11 +92,42 @@ return {
 			vim.fn.sign_define(hl, { text = icon, texthl = hl, numhl = "" })
 		end
 
+		mason_lspconfig.setup({
+			ensure_installed = {
+				"jdtls",
+				"gopls",
+				"html",
+				"cssls",
+				"tailwindcss",
+				"svelte",
+				"lua_ls",
+				"graphql",
+				"emmet_ls",
+				"prismals",
+				"pyright",
+			},
+			automatic_installation = false,
+		})
+
 		mason_lspconfig.setup_handlers({
+
+			-- list of servers for mason to install
+
 			-- default handler for installed servers
 			function(server_name)
-				lspconfig[server_name].setup({
+				if server_name ~= "jdtls" then
+					lspconfig[server_name].setup({
+						on_attach = lsp_attach,
+						capabilities = capabilities,
+					})
+				end
+			end,
+			["jdtls"] = function()
+				lspconfig["jdtls"].setup({
 					capabilities = capabilities,
+					--[[ 					cmd = {
+						"jdtls@1.41.0",
+					}, ]]
 				})
 			end,
 			["svelte"] = function()
