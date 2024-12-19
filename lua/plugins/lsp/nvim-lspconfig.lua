@@ -1,6 +1,9 @@
+-- LSP Support
 return {
+	-- LSP configuration
+	-- https://github.com/neovim/nvim-lspconfig
 	"neovim/nvim-lspconfig",
-	event = { "BufReadPre", "BufNewFile" },
+	event = { "VeryLazy", "BufReadPre", "BufNewFile" },
 	dependencies = {
 		-- LSP Management
 		-- https://github.com/williamboman/mason.nvim
@@ -12,6 +15,10 @@ return {
 		-- https://github.com/WhoIsSethDaniel/mason-tool-installer.nvim
 		{ "WhoIsSethDaniel/mason-tool-installer.nvim" },
 
+		-- Useful status updates for LSP
+		-- https://github.com/j-hui/fidget.nvim
+		{ "j-hui/fidget.nvim", opts = {} },
+
 		"hrsh7th/cmp-nvim-lsp",
 		{ "antosha417/nvim-lsp-file-operations", config = true },
 		-- Additional lua configuration, makes nvim stuff amazing
@@ -21,15 +28,9 @@ return {
 	config = function()
 		-- import lspconfig plugin
 		local lspconfig = require("lspconfig")
-
-		-- import mason_lspconfig plugin
+		require("mason").setup()
 		local mason_lspconfig = require("mason-lspconfig")
-
-		-- import cmp-nvim-lsp plugin
-		local cmp_nvim_lsp = require("cmp_nvim_lsp")
-
 		local keymap = vim.keymap -- for conciseness
-
 		local util = lspconfig.util
 
 		vim.api.nvim_create_autocmd("LspAttach", {
@@ -82,7 +83,7 @@ return {
 		})
 
 		-- used to enable autocompletion (assign to every lsp server config)
-		local capabilities = cmp_nvim_lsp.default_capabilities()
+		local capabilities = require("cmp_nvim_lsp").default_capabilities()
 
 		-- Change the Diagnostic symbols in the sign column (gutter)
 		-- (not in youtube nvim video)
@@ -94,7 +95,15 @@ return {
 
 		mason_lspconfig.setup({
 			ensure_installed = {
+				"bashls",
 				"jdtls",
+				"gradle_ls",
+				"groovyls",
+				"jsonls",
+				"lemminx",
+				"marksman",
+				"yamlls",
+				"quick_lint_js",
 				"gopls",
 				"html",
 				"cssls",
@@ -108,6 +117,13 @@ return {
 			},
 			automatic_installation = false,
 		})
+		-- There is an issue with mason-tools-installer running with VeryLazy, since it triggers on VimEnter which has already occured prior to this plug in loading so we need to call install explicitly
+		-- https://github.com/WhoIsSethDaniel/mason-tool-installer.nvim/issues/39
+		vim.api.nvim_command("MasonToolsInstall")
+
+		local lsp_attach = function(client, bufnr)
+			--Create your keybindings here ......
+		end
 
 		mason_lspconfig.setup_handlers({
 
@@ -115,20 +131,13 @@ return {
 
 			-- default handler for installed servers
 			function(server_name)
+				-- Don't call setup for JDTLS Java LSP because it will be setup from a separate config
 				if server_name ~= "jdtls" then
 					lspconfig[server_name].setup({
 						on_attach = lsp_attach,
 						capabilities = capabilities,
 					})
 				end
-			end,
-			["jdtls"] = function()
-				lspconfig["jdtls"].setup({
-					capabilities = capabilities,
-					--[[ 					cmd = {
-						"jdtls@1.41.0",
-					}, ]]
-				})
 			end,
 			["svelte"] = function()
 				-- configure svelte server
@@ -204,5 +213,19 @@ return {
 				})
 			end,
 		})
+		require("mason-tool-installer").setup({
+			-- Install these linters, formatters, debuggers automatically
+			ensure_installed = {
+				"java-debug-adapter",
+				"jave-test",
+			},
+		})
+		-- Globally configure all LSP floating preview popups (like hover, signature help, etc)
+		local open_floating_preview = vim.lsp.util.open_floating_preview
+		function vim.lsp.util.open_floating_preview(contents, syntax, opts, ...)
+			opts = opts or {}
+			opts.border = opts.border or "rounded" -- Set border to rounded
+			return open_floating_preview(contents, syntax, opts, ...)
+		end
 	end,
 }

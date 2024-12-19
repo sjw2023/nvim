@@ -1,5 +1,6 @@
 -- Java LSP
 return {
-	"mfussengger/nvim-jdtls",
-	ft = "java",
+	-- https://github.com/mussenegger/nvim-jdtls
+	"mfussenegger/nvim-jdtls",
+	ft = "java", -- Enable onlu on .java file extensions
 }
