@@ -6,6 +6,7 @@ local project_name = vim.fn.fnamemodify(vim.fn.getcwd(), ":p:h:t")
 local workspace_dir = home .. "/jdtls-workspace/" .. project_name
 
 local system_os = ""
+local win_mason_path = ""
 
 -- Determine OS
 if vim.fn.has("mac") == 1 then
@@ -14,6 +15,7 @@ elseif vim.fn.has("unix") == 1 then
 	system_os = "linux"
 elseif vim.fn.has("win32") == 1 or vim.fn.has("win64") == 1 then
 	system_os = "win"
+-- win_mason_path .. vim.fn.stdpath("data")
 else
 	print("OS not found, defaulting to 'linux'")
 	system_os = "linux"
@@ -38,7 +40,10 @@ local config = {
 		"-Declipse.product=org.eclipse.jdt.ls.core.product",
 		"-Dlog.protocol=true",
 		"-Dlog.level=ALL",
-		"-javaagent:" .. home .. "/.local/share/nvim/mason/share/jdtls/lombok.jar",
+		"-javaagent:"
+			.. home
+			-- .. "/.local/share/nvim/mason/share/jdtls/lombok.jar",
+			.. "\\AppData\\Local\\nvim-data\\mason\\packages\\jdtls\\lombok.jar",
 		"-Xmx4g",
 		"--add-modules=ALL-SYSTEM",
 		"--add-opens",
@@ -48,9 +53,14 @@ local config = {
 
 		-- Eclipse jdtls location
 		"-jar",
-		home .. "/.local/share/nvim/mason/share/jdtls/plugins/org.eclipse.equinox.launcher.jar",
+		-- home .. "/.local/share/nvim/mason/share/jdtls/plugins/org.eclipse.equinox.launcher.jar",
+		home
+			.. "\\AppData\\Local\\nvim-data\\mason\\packages\\jdtls\\plugins\\org.eclipse.equinox.launcher_1.6.900.v20240613-2009.jar",
 		"-configuration",
-		home .. "/.local/share/nvim/mason/packages/jdtls/config_" .. system_os,
+		home
+			-- "/.local/share/nvim/mason/packages/jdtls/config_" 
+			.. "\\appdata\\local\\nvim-data\\mason\\packages\\jdtls\\config_"
+			.. system_os,
 		"-data",
 		workspace_dir,
 	},
@@ -64,7 +74,8 @@ local config = {
 	settings = {
 		java = {
 			-- TODO Replace this with the absolute path to your main java version (JDK 17 or higher)
-			home = "/usr/lib/jvm/java-17-openjdk-amd64",
+			-- home = "/usr/lib/jvm/java-17-openjdk-amd64",
+			home = "%JAVA_HOME%",
 			eclipse = {
 				downloadSources = true,
 			},
@@ -74,17 +85,21 @@ local config = {
 				-- The runtime name parameters need to match specific Java execution environments.  See https://github.com/tamago324/nlsp-settings.nvim/blob/2a52e793d4f293c0e1d61ee5794e3ff62bfbbb5d/schemas/_generated/jdtls.json#L317-L334
 				runtimes = {
 					{
-						name = "JavaSE-11",
-						path = "/usr/lib/jvm/java-11-openjdk-amd64",
+						name = "Amazon Corretto 21",
+						path = "JAVA_HOME",
 					},
-					{
-						name = "JavaSE-17",
-						path = "/usr/lib/jvm/java-17-openjdk-amd64",
-					},
-					{
-						name = "JavaSE-19",
-						path = "/usr/lib/jvm/java-19-openjdk-amd64",
-					},
+					-- {
+					-- 	name = "JavaSE-11",
+					-- 	path = "/usr/lib/jvm/java-11-openjdk-amd64",
+					-- },
+					-- {
+					-- 	name = "JavaSE-17",
+					-- 	path = "/usr/lib/jvm/java-17-openjdk-amd64",
+					-- },
+					-- {
+					-- 	name = "JavaSE-19",
+					-- 	path = "/usr/lib/jvm/java-19-openjdk-amd64",
+					-- },
 				},
 			},
 			maven = {
