@@ -28,7 +28,9 @@ return {
 	config = function()
 		-- import lspconfig plugin
 		local lspconfig = require("lspconfig")
-		require("mason").setup()
+		require("mason").setup({
+			log_level = vim.log.levels.DEBUG,
+		})
 		local mason_lspconfig = require("mason-lspconfig")
 		local keymap = vim.keymap -- for conciseness
 		local util = lspconfig.util
