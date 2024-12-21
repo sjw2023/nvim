@@ -6,7 +6,10 @@ local project_name = vim.fn.fnamemodify(vim.fn.getcwd(), ":p:h:t")
 local workspace_dir = home .. "/jdtls-workspace/" .. project_name
 
 local system_os = ""
-local win_mason_path = ""
+local jdtls_path = vim.fn.stdpath("data") .. "\\mason\\packages\\jdtls"
+local launcher_jar = vim.fn.glob(jdtls_path .. "\\plugins\\org.eclipse.equinox.launcher_*.jar")
+-- workspace_dir = vim.fn.fnamemodify(vim.fn.getcwd(), ":p:h:t")
+local config_path = vim.fn.glob(jdtls_path) .. "\\config_"
 
 -- Determine OS
 if vim.fn.has("mac") == 1 then
@@ -27,7 +30,7 @@ local bundles = {
 }
 
 -- Needed for running/debugging unit tests
-vim.list_extend(bundles, vim.split(vim.fn.glob(home .. "/.local/share/nvim/mason/share/java-test/*.jar", 1), "\n"))
+-- vim.list_extend(bundles, vim.split(vim.fn.glob(home .. "/.local/share/nvim/mason/share/java-test/*.jar", 1), "\n"))
 
 -- See `:help vim.lsp.start_client` for an overview of the supported `config` options.
 local config = {
@@ -41,26 +44,22 @@ local config = {
 		"-Dlog.protocol=true",
 		"-Dlog.level=ALL",
 		"-javaagent:"
-			.. home
-			-- .. "/.local/share/nvim/mason/share/jdtls/lombok.jar",
-			.. "\\AppData\\Local\\nvim-data\\mason\\packages\\jdtls\\lombok.jar",
+			-- .. home .. "/.local/share/nvim/mason/share/jdtls/lombok.jar",
+			.. jdtls_path
+			.. "\\lombok.jar",
 		"-Xmx4g",
 		"--add-modules=ALL-SYSTEM",
 		"--add-opens",
 		"java.base/java.util=ALL-UNNAMED",
 		"--add-opens",
 		"java.base/java.lang=ALL-UNNAMED",
-
 		-- Eclipse jdtls location
 		"-jar",
 		-- home .. "/.local/share/nvim/mason/share/jdtls/plugins/org.eclipse.equinox.launcher.jar",
-		home
-			.. "\\AppData\\Local\\nvim-data\\mason\\packages\\jdtls\\plugins\\org.eclipse.equinox.launcher_1.6.900.v20240613-2009.jar",
+		launcher_jar,
 		"-configuration",
-		home
-			-- "/.local/share/nvim/mason/packages/jdtls/config_" 
-			.. "\\appdata\\local\\nvim-data\\mason\\packages\\jdtls\\config_"
-			.. system_os,
+		-- home .. "/.local/share/nvim/mason/packages/jdtls/config_" .. system_os,
+		config_path .. system_os,
 		"-data",
 		workspace_dir,
 	},
@@ -76,17 +75,29 @@ local config = {
 			-- TODO Replace this with the absolute path to your main java version (JDK 17 or higher)
 			-- home = "/usr/lib/jvm/java-17-openjdk-amd64",
 			home = "%JAVA_HOME%",
-			eclipse = {
-				downloadSources = true,
-			},
+			-- eclipse = {
+			-- 	downloadSources = true,
+			-- },
 			configuration = {
 				updateBuildConfiguration = "interactive",
 				-- TODO Update this by adding any runtimes that you need to support your Java projects and removing any that you don't have installed
 				-- The runtime name parameters need to match specific Java execution environments.  See https://github.com/tamago324/nlsp-settings.nvim/blob/2a52e793d4f293c0e1d61ee5794e3ff62bfbbb5d/schemas/_generated/jdtls.json#L317-L334
 				runtimes = {
+					--[[ {
+						name = "JavaSE-11",
+						path = "/usr/lib/jvm/java-11-openjdk-amd64",
+					},
 					{
-						name = "Amazon Corretto 21",
-						path = "JAVA_HOME",
+						name = "JavaSE-17",
+						path = "/usr/lib/jvm/java-17-openjdk-amd64",
+					},
+					{
+						name = "JavaSE-19",
+						path = "/usr/lib/jvm/java-19-openjdk-amd64",
+					}, ]]
+					{
+						name = "corretto21jdk 21.0.5.111",
+						path = "%JAVA_HOME%",
 					},
 					-- {
 					-- 	name = "JavaSE-11",
