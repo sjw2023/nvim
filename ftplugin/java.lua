@@ -8,7 +8,7 @@ local workspace_dir = home .. "/jdtls-workspace/" .. project_name
 local system_os = ""
 local jdtls_path = vim.fn.stdpath("data") .. "\\mason\\packages\\jdtls"
 local launcher_jar = vim.fn.glob(jdtls_path .. "\\plugins\\org.eclipse.equinox.launcher_*.jar")
--- workspace_dir = vim.fn.fnamemodify(vim.fn.getcwd(), ":p:h:t")
+workspace_dir = vim.fn.fnamemodify(vim.fn.getcwd(), ":p:h:t")
 local config_path = vim.fn.glob(jdtls_path) .. "\\config_"
 
 -- Determine OS
@@ -26,11 +26,16 @@ end
 
 -- Needed for debugging
 local bundles = {
-	vim.fn.glob(home .. "/.local/share/nvim/mason/share/java-debug-adapter/com.microsoft.java.debug.plugin.jar"),
+	-- vim.fn.glob(home .. "/.local/share/nvim/mason/share/java-debug-adapter/com.microsoft.java.debug.plugin.jar"),
+	vim.fn.glob(vim.fn.stdpath("data") .. "\\mason\\share\\java-debug-adapter\\com.microsoft.java.debug.plugin.jar"),
 }
 
 -- Needed for running/debugging unit tests
 -- vim.list_extend(bundles, vim.split(vim.fn.glob(home .. "/.local/share/nvim/mason/share/java-test/*.jar", 1), "\n"))
+vim.list_extend(
+	bundles,
+	vim.split(vim.fn.glob(vim.fn.stdpath("data") .. "\\mason\\share\\java-test\\*.jar", true), "\n")
+)
 
 -- See `:help vim.lsp.start_client` for an overview of the supported `config` options.
 local config = {

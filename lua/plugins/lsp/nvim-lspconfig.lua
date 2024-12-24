@@ -98,7 +98,6 @@ return {
 		mason_lspconfig.setup({
 			ensure_installed = {
 				"bashls",
-				"jdtls",
 				"gradle_ls",
 				"groovyls",
 				"jsonls",

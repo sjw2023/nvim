@@ -9,6 +9,7 @@ return {
 	opts = {
 		view = {
 			width = 35,
+			adaptive_size = true,
 			relativenumber = true,
 		},
 		-- change folder arrow icons
@@ -30,6 +31,7 @@ return {
 		-- window splits
 		actions = {
 			open_file = {
+				resize_window = true,
 				window_picker = {
 					enable = false,
 				},
